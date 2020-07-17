@@ -3,6 +3,9 @@
 **Status**: Initial MVP
 The AWS Check Versions Dashboard project contains source code and documentation for backend code and an Amazon Quicksight dashboard to view the deployed versions for Amazon RDS instances, Amazon Managed Streaming for Apache (MSK), Amazon MQ, Amazon Elasticsearch clusters, Amazon EKS clusters, Amazon ElastiCache clusters, and Amazon DocumentDB (DocDB) clusters vs. the latest available versions for each service.   
 
+Example Dashboard using Amazon Quicksight:
+![Example Dashboard](./docs/images/170.png)
+
 ## Build application
 
 The Serverless Application Model Command Line Interface (SAM CLI) is an extension of the AWS CLI that adds functionality for building and testing Lambda applications. It uses Docker to run your functions in an Amazon Linux environment that matches Lambda. It can also emulate your application's build environment and API.
