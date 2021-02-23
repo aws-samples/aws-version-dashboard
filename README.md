@@ -5,6 +5,9 @@ The AWS Check Versions Dashboard project contains source code and documentation 
 
 The AWS Check Version Dashboard provides two templates to launch the required resources.  You can leverage CloudFormation StackSets to launch ```stackset-role-template.yaml``` into your Organizations child accounts that will create the necessary IAM roles Lambda functions will assume for cross-account access.  The solution also includes an AWS SAM (Serverless Application Model) template ```template.yaml``` that will launch all of the necessary resources into an administrator or delegated administrator account.
 
+Example Dashboard using Amazon Quicksight:
+![Example Dashboard](./docs/images/170.png)
+
 
 **Deployment Instructions** for ```stackset-role-template.yaml```
 
@@ -19,9 +22,6 @@ To deploy this template to your preferred AWS Organization child account(s) and 
 
 **Deployment Instructions** for ```template.yaml```
 Next, you can follow the instructions below to build and deploy an AWS SAM (Serverless Application Model) template ```template.yaml``` that will launch all of the necessary resources into an administrator or delegated administrator account.
-
-Example Dashboard using Amazon Quicksight:
-![Example Dashboard](./docs/images/170.png)
 
 ## Build application
 
