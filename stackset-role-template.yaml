@@ -9,7 +9,7 @@ Parameters:
   PrimaryAccountId:
     Type: String
     Default: "111111111111"
-    Description: Current Account ID
+    Description: Enter Current Account ID
 
 Resources:
   RDSLambdaExecutionRole:

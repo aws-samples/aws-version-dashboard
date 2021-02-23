@@ -3,6 +3,8 @@
 **Status**: Initial MVP
 The AWS Check Versions Dashboard project contains source code and documentation for backend code and an Amazon Quicksight dashboard to view the deployed versions for Amazon RDS instances, Amazon Managed Streaming for Apache (MSK), Amazon MQ, Amazon Elasticsearch clusters, Amazon EKS clusters, Amazon ElastiCache clusters, and Amazon DocumentDB (DocDB) clusters vs. the latest available versions for each service.   
 
+The AWS Check Version Dashboard provides two templates to launch the required resources.  You can leverage CloudFormation StackSets to launch ```stackset-role-template.yaml``` into your Organizations child account that will create the necessary roles for cross-account access.  Next, you can follow the instructions below to build and deploy a SAM template ```template.yaml``` that will launch all of the necessary resources into an administrator or delegated administrator account.
+
 Example Dashboard using Amazon Quicksight:
 ![Example Dashboard](./docs/images/170.png)
 
