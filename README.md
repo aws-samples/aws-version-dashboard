@@ -3,7 +3,19 @@
 **Status**: Initial MVP
 The AWS Check Versions Dashboard project contains source code and documentation for backend code and an Amazon Quicksight dashboard to view the deployed versions for Amazon RDS instances, Amazon Managed Streaming for Apache (MSK), Amazon MQ, Amazon Elasticsearch clusters, Amazon EKS clusters, Amazon ElastiCache clusters, and Amazon DocumentDB (DocDB) clusters vs. the latest available versions for each service.   
 
-The AWS Check Version Dashboard provides two templates to launch the required resources.  You can leverage CloudFormation StackSets to launch ```stackset-role-template.yaml``` into your Organizations child accounts that will create the necessary IAM roles Lambda functions will assume for cross-account access.  Next, you can follow the instructions below to build and deploy an AWS SAM (Serverless Application Model) template ```template.yaml``` that will launch all of the necessary resources into an administrator or delegated administrator account.
+The AWS Check Version Dashboard provides two templates to launch the required resources.  You can leverage CloudFormation StackSets to launch ```stackset-role-template.yaml``` into your Organizations child accounts that will create the necessary IAM roles Lambda functions will assume for cross-account access.  
+
+**Deployment Instructions** for ```stackset-role-template.yaml```
+
+**Required parameters**:
+
+* **PrimaryAccountId**: The current administrator or delegated administrator account you are launching the StackSet out of.
+
+To deploy this template via CloudFormation StackSets, please refer to the CloudFormation StackSet documentation available at this url: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-getting-started-create.html
+
+To deploy this template to your preferred AWS Organization child account(s) and region(s) via CloudFormation Stack, please refer to the CloudFormation documentation available at this url: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-console-create-stack.html
+
+Next, you can follow the instructions below to build and deploy an AWS SAM (Serverless Application Model) template ```template.yaml``` that will launch all of the necessary resources into an administrator or delegated administrator account.
 
 Example Dashboard using Amazon Quicksight:
 ![Example Dashboard](./docs/images/170.png)
