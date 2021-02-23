@@ -20,7 +20,7 @@ To build and deploy the application: run the following in your shell:
 
 ```bash
 sam build
-sam deploy --guided
+sam deploy --guided --capabilities CAPABILITY_NAMED_IAM
 ```
 
 The first command will build the source of your application. The second command will package and deploy your application to AWS, with a series of prompts:

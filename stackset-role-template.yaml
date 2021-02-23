@@ -1,0 +1,221 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >
+  aws-check-versions
+
+  SAM Template for aws-check-versions
+
+# Need to update StackSet to pull source Account ID, not child Account IDs
+Parameters:
+  PrimaryAccountId:
+    Type: String
+    Default: "111111111111"
+    Description: Current Account ID
+
+Resources:
+  RDSLambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: aws-ver-dash-lambda-rds
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Action:
+              - sts:AssumeRole
+            Principal:
+              AWS:
+                - !Sub arn:aws:iam::${PrimaryAccountId}:role/aws-ver-dash-lambda-rds
+        Version: 2012-10-17
+      Policies:
+        - PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - rds:DescribeDBInstances
+                  - rds:DescribeDBEngineVersions
+                Resource: '*'
+          PolicyName: LambdaRDSDescribe
+        - PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: '*'
+          PolicyName: LambdaCloudwatchWrite
+
+  ESLambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: aws-ver-dash-lambda-es
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Action:
+              - sts:AssumeRole
+            Principal:
+              AWS:
+                - !Sub arn:aws:iam::${PrimaryAccountId}:role/aws-ver-dash-lambda-es
+        Version: 2012-10-17
+      Policies:
+        - PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - es:ListDomainNames
+                  - es:DescribeElasticSearchDomain
+                  - es:ListElasticsearchVersions
+                Resource: '*'
+          PolicyName: LambdaESDescribe
+        - PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: '*'
+          PolicyName: LambdaCloudwatchWrite
+
+  ECLambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: aws-ver-dash-lambda-ec
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Action:
+              - sts:AssumeRole
+            Principal:
+              AWS:
+                - !Sub arn:aws:iam::${PrimaryAccountId}:role/aws-ver-dash-lambda-ec
+        Version: 2012-10-17
+      Policies:
+        - PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - elasticache:DescribeCacheClusters
+                  - elasticache:DescribeCacheEngineVersions
+                Resource: '*'
+          PolicyName: LambdaECDescribe
+        - PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: '*'
+          PolicyName: LambdaCloudwatchWrite
+
+  MSKLambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: aws-ver-dash-lambda-msk
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Action:
+              - sts:AssumeRole
+            Principal:
+              AWS:
+                - !Sub arn:aws:iam::${PrimaryAccountId}:role/aws-ver-dash-lambda-msk
+        Version: 2012-10-17
+      Policies:
+        - PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - kafka:ListClusters
+                  - kafka:ListConfigurations
+                  - kafka:ListKafkaVersions
+                Resource: '*'
+          PolicyName: LambdaMSKDescribe
+        - PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: '*'
+          PolicyName: LambdaCloudwatchWrite
+
+  MQLambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: aws-ver-dash-lambda-mq
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Action:
+              - sts:AssumeRole
+            Principal:
+              AWS:
+                - !Sub arn:aws:iam::${PrimaryAccountId}:role/aws-ver-dash-lambda-mq
+        Version: 2012-10-17
+      Policies:
+        - PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - mq:ListBrokers
+                  - mq:ListConfigurations
+                  - mq:DescribeBroker
+                  - mq:DescribeBrokerEngineTypes
+                Resource: '*'
+          PolicyName: LambdaMQDescribe
+        - PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: '*'
+          PolicyName: LambdaCloudwatchWrite
+
+  EKSLambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: aws-ver-dash-lambda-eks
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Action:
+              - sts:AssumeRole
+            Principal:
+              AWS:
+                - !Sub arn:aws:iam::${PrimaryAccountId}:role/aws-ver-dash-lambda-eks
+        Version: 2012-10-17
+      Policies:
+        - PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - eks:DescribeCluster
+                  - eks:ListClusters
+                Resource: '*'
+          PolicyName: LambdaEKSDescribe
+        - PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: '*'
+          PolicyName: LambdaCloudwatchWrite
