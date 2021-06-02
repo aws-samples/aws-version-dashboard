@@ -3,7 +3,7 @@ import botocore.exceptions
 
 def lambda_handler(event, context):
 
-    eks_versions = ['1.18', '1.17', '1.16', '1.15', '1.14', '1.13']
+    eks_versions = ['1.20', '1.19', '1.18', '1.17', '1.16', '1.15', '1.14', '1.13']
     eks_versions_len = len(eks_versions)
 
     id = boto3.client('sts').get_caller_identity().get('Account')
