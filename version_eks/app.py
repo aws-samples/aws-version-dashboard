@@ -4,7 +4,7 @@ import botocore.exceptions
 
 def lambda_handler(event, context):
 
-    eks_versions = ['1.20', '1.19', '1.18', '1.17', '1.16', '1.15', '1.14', '1.13']
+    eks_versions = ['1.25', '1.24', '1.23', '1.22', '1.21', '1.20', '1.19']
     eks_versions_len = len(eks_versions)
 
     logger = logging.getLogger()
