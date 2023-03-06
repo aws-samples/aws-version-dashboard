@@ -1,133 +1,202 @@
 {
-  "StartAt": "GetVersions",
+  "StartAt": "GetAccountList",
   "States": {
-    "GetVersions": {
-      "Type": "Parallel",
-      "Next": "CombineVersions",
-      "Branches": [
-      {
-        "StartAt": "GetRDSVersion",
-        "States": {
-          "GetRDSVersion": {
-            "Type": "Task",
-            "Resource": "${VersionRdsFunctionArn}",
-            "Retry": [ {
-              "ErrorEquals": [ "Lambda.ServiceException", "Lambda.AWSLambdaException", "Lambda.SdkClientException"],
-              "IntervalSeconds": 2,
-              "MaxAttempts": 3,
-              "BackoffRate": 2
-            }],
-            "End": true
-          }
-        }
-      },
-      {
-        "StartAt": "GetElasticsearchVersion",
-        "States": {
-          "GetElasticsearchVersion": {
-            "Type": "Task",
-            "Resource": "${VersionEsFunctionArn}",
-            "Retry": [ {
-              "ErrorEquals": [ "Lambda.ServiceException", "Lambda.AWSLambdaException", "Lambda.SdkClientException"],
-              "IntervalSeconds": 2,
-              "MaxAttempts": 3,
-              "BackoffRate": 2
-            }],
-            "End": true
-          }
-        }
-      },
-      {
-        "StartAt": "GetDocumentDBVersion",
-        "States": {
-          "GetDocumentDBVersion": {
-            "Type": "Task",
-            "Resource": "${VersionDocDBFunctionArn}",
-            "Retry": [ {
-              "ErrorEquals": [ "Lambda.ServiceException", "Lambda.AWSLambdaException", "Lambda.SdkClientException"],
-              "IntervalSeconds": 2,
-              "MaxAttempts": 3,
-              "BackoffRate": 2
-            }],
-            "End": true
-          }
-        }
-      },
-      {
-        "StartAt": "GetEKSVersion",
-        "States": {
-          "GetEKSVersion": {
-            "Type": "Task",
-            "Resource": "${VersionEKSFunctionArn}",
-            "Retry": [ {
-              "ErrorEquals": [ "Lambda.ServiceException", "Lambda.AWSLambdaException", "Lambda.SdkClientException"],
-              "IntervalSeconds": 2,
-              "MaxAttempts": 3,
-              "BackoffRate": 2
-            }],
-            "End": true
-          }
-        }
-      },
-      {
-        "StartAt": "GetMSKVersion",
-        "States": {
-          "GetMSKVersion": {
-            "Type": "Task",
-            "Resource": "${VersionMSKFunctionArn}",
-            "Retry": [ {
-              "ErrorEquals": [ "Lambda.ServiceException", "Lambda.AWSLambdaException", "Lambda.SdkClientException"],
-              "IntervalSeconds": 2,
-              "MaxAttempts": 3,
-              "BackoffRate": 2
-            }],
-            "End": true
-          }
-        }
-      },
-      {
-        "StartAt": "GetMQVersion",
-        "States": {
-          "GetMQVersion": {
-            "Type": "Task",
-            "Resource": "${VersionMQFunctionArn}",
-            "Retry": [ {
-              "ErrorEquals": [ "Lambda.ServiceException", "Lambda.AWSLambdaException", "Lambda.SdkClientException"],
-              "IntervalSeconds": 2,
-              "MaxAttempts": 3,
-              "BackoffRate": 2
-            }],
-            "End": true
-          }
-        }
-      },
-      {
-        "StartAt": "GetElasticacheVersion",
-        "States": {
-          "GetElasticacheVersion": {
-            "Type": "Task",
-            "Resource": "${VersionEcFunctionArn}",
-            "Retry": [ {
-              "ErrorEquals": [ "Lambda.ServiceException", "Lambda.AWSLambdaException", "Lambda.SdkClientException"],
-              "IntervalSeconds": 2,
-              "MaxAttempts": 3,
-              "BackoffRate": 2
-            }],
-            "End": true
-          }
-        }
-      }
-      ]
-    },
-    "CombineVersions": {
+    "GetAccountList": {
       "Type": "Task",
-      "Resource": "${VersionCombineFunctionArn}",
-      "Retry": [ {
-        "ErrorEquals": [ "Lambda.ServiceException", "Lambda.AWSLambdaException", "Lambda.SdkClientException"],
-        "IntervalSeconds": 2,
-        "MaxAttempts": 3,
-        "BackoffRate": 2
-      }],
+      "Resource":"${VersionAcctListFunctionArn}",
+      "Next":"PullDataFromAccounts"},
+    "PullDataFromAccounts": {
+      "Type": "Map",
+      "ItemsPath": "$.accounts",
+      "MaxConcurrency": 10,
+      "Iterator": {
+        "StartAt": "GetVersions",
+        "States": {
+          "GetVersions": {
+            "Type": "Parallel",
+            "Next": "CombineVersions",
+            "Branches": [
+              {
+                "StartAt": "GetRDSVersion",
+                "States": {
+                  "GetRDSVersion": {
+                    "Type": "Task",
+                    "Resource": "${VersionRdsFunctionArn}",
+                    "Retry": [
+                      {
+                        "ErrorEquals": [
+                          "Lambda.ServiceException",
+                          "Lambda.AWSLambdaException",
+                          "Lambda.SdkClientException"
+                        ],
+                        "IntervalSeconds": 2,
+                        "MaxAttempts": 3,
+                        "BackoffRate": 2
+                      }
+                    ],
+                    "End": true
+                  }
+                }
+              },
+              {
+                "StartAt": "GetElasticsearchVersion",
+                "States": {
+                  "GetElasticsearchVersion": {
+                    "Type": "Task",
+                    "Resource": "${VersionEcFunctionArn}",
+                    "Retry": [
+                      {
+                        "ErrorEquals": [
+                          "Lambda.ServiceException",
+                          "Lambda.AWSLambdaException",
+                          "Lambda.SdkClientException"
+                        ],
+                        "IntervalSeconds": 2,
+                        "MaxAttempts": 3,
+                        "BackoffRate": 2
+                      }
+                    ],
+                    "End": true
+                  }
+                }
+              },
+              {
+                "StartAt": "GetDocumentDBVersion",
+                "States": {
+                  "GetDocumentDBVersion": {
+                    "Type": "Task",
+                    "Resource": "${VersionDocDBFunctionArn}",
+                    "Retry": [
+                      {
+                        "ErrorEquals": [
+                          "Lambda.ServiceException",
+                          "Lambda.AWSLambdaException",
+                          "Lambda.SdkClientException"
+                        ],
+                        "IntervalSeconds": 2,
+                        "MaxAttempts": 3,
+                        "BackoffRate": 2
+                      }
+                    ],
+                    "End": true
+                  }
+                }
+              },
+              {
+                "StartAt": "GetEKSVersion",
+                "States": {
+                  "GetEKSVersion": {
+                    "Type": "Task",
+                    "Resource": "${VersionEKSFunctionArn}",
+                    "Retry": [
+                      {
+                        "ErrorEquals": [
+                          "Lambda.ServiceException",
+                          "Lambda.AWSLambdaException",
+                          "Lambda.SdkClientException"
+                        ],
+                        "IntervalSeconds": 2,
+                        "MaxAttempts": 3,
+                        "BackoffRate": 2
+                      }
+                    ],
+                    "End": true
+                  }
+                }
+              },
+              {
+                "StartAt": "GetMSKVersion",
+                "States": {
+                  "GetMSKVersion": {
+                    "Type": "Task",
+                    "Resource": "${VersionMSKFunctionArn}",
+                    "Retry": [
+                      {
+                        "ErrorEquals": [
+                          "Lambda.ServiceException",
+                          "Lambda.AWSLambdaException",
+                          "Lambda.SdkClientException"
+                        ],
+                        "IntervalSeconds": 2,
+                        "MaxAttempts": 3,
+                        "BackoffRate": 2
+                      }
+                    ],
+                    "End": true
+                  }
+                }
+              },
+              {
+                "StartAt": "GetMQVersion",
+                "States": {
+                  "GetMQVersion": {
+                    "Type": "Task",
+                    "Resource": "${VersionMQFunctionArn}",
+                    "Retry": [
+                      {
+                        "ErrorEquals": [
+                          "Lambda.ServiceException",
+                          "Lambda.AWSLambdaException",
+                          "Lambda.SdkClientException"
+                        ],
+                        "IntervalSeconds": 2,
+                        "MaxAttempts": 3,
+                        "BackoffRate": 2
+                      }
+                    ],
+                    "End": true
+                  }
+                }
+              },
+              {
+                "StartAt": "GetElasticacheVersion",
+                "States": {
+                  "GetElasticacheVersion": {
+                    "Type": "Task",
+                    "Resource": "${VersionEcFunctionArn}",
+                    "Retry": [
+                      {
+                        "ErrorEquals": [
+                          "Lambda.ServiceException",
+                          "Lambda.AWSLambdaException",
+                          "Lambda.SdkClientException"
+                        ],
+                        "IntervalSeconds": 2,
+                        "MaxAttempts": 3,
+                        "BackoffRate": 2
+                      }
+                    ],
+                    "End": true
+                  }
+                }
+              }
+            ]
+          },
+          "CombineVersions": {
+            "Type": "Task",
+            "Resource": "${VersionCombineFunctionArn}",
+            "Retry": [
+              {
+                "ErrorEquals": [
+                  "Lambda.ServiceException",
+                  "Lambda.AWSLambdaException",
+                  "Lambda.SdkClientException"
+                ],
+                "IntervalSeconds": 2,
+                "MaxAttempts": 3,
+                "BackoffRate": 2
+              }
+            ],
+            "End": true
+          }
+        }
+      },
+      "ResultPath": "$.detail.processedItems",
+      "Next": "CombineAllAccounts"
+    },
+    "CombineAllAccounts": {
+      "Type": "Task",
+      "Resource": "${VersionCombineAcctsFunctionArn}",
       "End": true
     }
   }

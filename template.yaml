@@ -10,10 +10,18 @@ Globals:
   Function:
     Timeout: 60
 
+Parameters:
+  SpecifyAccountsOrEnterAll:
+    Type: String
+    Default: '111111111111,222222222222'
+    Description: Enter an Account ID, a comma delimited list of accounts, enter ALL for an entire AWS Organization, or replace the accounts.csv file with a list of comma delimited accounts
+
+
 Resources:
   RDSLambdaExecutionRole:
     Type: AWS::IAM::Role
     Properties:
+      RoleName: aws-ver-dash-lambda-rds
       AssumeRolePolicyDocument:
         Statement:
           - Effect: Allow
@@ -43,10 +51,19 @@ Resources:
                   - logs:PutLogEvents
                 Resource: '*'
           PolicyName: LambdaCloudwatchWrite
+        - PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - sts:AssumeRole
+                Resource: 'arn:aws:iam::*:role/aws-ver-dash-lambda-rds'
+          PolicyName: RDSAssumeRole
 
   ESLambdaExecutionRole:
     Type: AWS::IAM::Role
     Properties:
+      RoleName: aws-ver-dash-lambda-es
       AssumeRolePolicyDocument:
         Statement:
           - Effect: Allow
@@ -77,10 +94,19 @@ Resources:
                   - logs:PutLogEvents
                 Resource: '*'
           PolicyName: LambdaCloudwatchWrite
+        - PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - sts:AssumeRole
+                Resource: 'arn:aws:iam::*:role/aws-ver-dash-lambda-es'
+          PolicyName: ESAssumeRole
 
   ECLambdaExecutionRole:
     Type: AWS::IAM::Role
     Properties:
+      RoleName: aws-ver-dash-lambda-ec
       AssumeRolePolicyDocument:
         Statement:
           - Effect: Allow
@@ -110,10 +136,19 @@ Resources:
                   - logs:PutLogEvents
                 Resource: '*'
           PolicyName: LambdaCloudwatchWrite
+        - PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - sts:AssumeRole
+                Resource: 'arn:aws:iam::*:role/aws-ver-dash-lambda-ec'
+          PolicyName: ECAssumeRole
 
   MSKLambdaExecutionRole:
     Type: AWS::IAM::Role
     Properties:
+      RoleName: aws-ver-dash-lambda-msk
       AssumeRolePolicyDocument:
         Statement:
           - Effect: Allow
@@ -144,10 +179,19 @@ Resources:
                   - logs:PutLogEvents
                 Resource: '*'
           PolicyName: LambdaCloudwatchWrite
+        - PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - sts:AssumeRole
+                Resource: 'arn:aws:iam::*:role/aws-ver-dash-lambda-msk'
+          PolicyName: MSKAssumeRole
 
   MQLambdaExecutionRole:
     Type: AWS::IAM::Role
     Properties:
+      RoleName: aws-ver-dash-lambda-mq
       AssumeRolePolicyDocument:
         Statement:
           - Effect: Allow
@@ -179,10 +223,19 @@ Resources:
                   - logs:PutLogEvents
                 Resource: '*'
           PolicyName: LambdaCloudwatchWrite
+        - PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - sts:AssumeRole
+                Resource: 'arn:aws:iam::*:role/aws-ver-dash-lambda-mq'
+          PolicyName: MQAssumeRole
 
   EKSLambdaExecutionRole:
     Type: AWS::IAM::Role
     Properties:
+      RoleName: aws-ver-dash-lambda-eks
       AssumeRolePolicyDocument:
         Statement:
           - Effect: Allow
@@ -212,6 +265,14 @@ Resources:
                   - logs:PutLogEvents
                 Resource: '*'
           PolicyName: LambdaCloudwatchWrite
+        - PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - sts:AssumeRole
+                Resource: 'arn:aws:iam::*:role/aws-ver-dash-lambda-eks'
+          PolicyName: EKSAssumeRole
 
   CombineLambdaExecutionRole:
     Type: AWS::IAM::Role
@@ -245,6 +306,80 @@ Resources:
                 Resource: '*'
           PolicyName: LambdaCloudwatchWrite
 
+  VersionAcctListExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Action:
+              - sts:AssumeRole
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+        Version: 2012-10-17
+      Policies:
+        - PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - organizations:ListAccounts
+                  - organizations:DescribeOrganization
+                Resource: '*'
+          PolicyName: LambdaS3PutPolicy
+        - PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: '*'
+          PolicyName: LambdaCloudwatchWrite
+
+  CombineAcctLambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Action:
+              - sts:AssumeRole
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+        Version: 2012-10-17
+      Policies:
+        - PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:PutObject
+                  - s3:GetObject
+                Resource: !Join [ '/', [!GetAtt VersionsS3Bucket.Arn, '*']]
+          PolicyName: LambdaS3PutPolicy
+        - PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:ListBucket
+                Resource:  !GetAtt VersionsS3Bucket.Arn
+          PolicyName: LambdaS3ListPolicy
+        - PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: '*'
+          PolicyName: LambdaCloudwatchWrite
+
   LambdaInvokeRole:
     Type: AWS::IAM::Role
     Properties:
@@ -265,6 +400,7 @@ Resources:
                 Action:
                   - lambda:InvokeFunction
                 Resource:
+                  - !GetAtt VersionAcctListFunction.Arn
                   - !GetAtt VersionRdsFunction.Arn
                   - !GetAtt VersionEsFunction.Arn
                   - !GetAtt VersionEcFunction.Arn
@@ -273,6 +409,7 @@ Resources:
                   - !GetAtt VersionMSKFunction.Arn
                   - !GetAtt VersionMQFunction.Arn
                   - !GetAtt VersionCombineFunction.Arn
+                  - !GetAtt VersionCombineAcctsFunction.Arn
         - PolicyName: StepCloudwatchWrite
           PolicyDocument:
             Version: 2012-10-17
@@ -381,6 +518,7 @@ Resources:
               LogGroupArn: !GetAtt StepFunctionLogGroup.Arn
       DefinitionUri: version_state_machine/version_state_machine.asl.json
       DefinitionSubstitutions:
+        VersionAcctListFunctionArn: !GetAtt VersionAcctListFunction.Arn
         VersionRdsFunctionArn: !GetAtt VersionRdsFunction.Arn
         VersionEsFunctionArn: !GetAtt VersionEsFunction.Arn
         VersionDocDBFunctionArn: !GetAtt VersionDocDBFunction.Arn
@@ -389,13 +527,26 @@ Resources:
         VersionMQFunctionArn: !GetAtt VersionMQFunction.Arn
         VersionEcFunctionArn: !GetAtt VersionEcFunction.Arn
         VersionCombineFunctionArn: !GetAtt VersionCombineFunction.Arn
+        VersionCombineAcctsFunctionArn: !GetAtt VersionCombineAcctsFunction.Arn
       Role: !GetAtt LambdaInvokeRole.Arn
 
   StepFunctionLogGroup:
     Type: AWS::Logs::LogGroup
 
+
+  VersionAcctListFunction:
+      Type: AWS::Serverless::Function
+      Properties:
+        CodeUri: version_acct_list/
+        Handler: app.lambda_handler
+        Runtime: python3.7
+        Role: !GetAtt VersionAcctListExecutionRole.Arn
+        Environment:
+          Variables:
+            ACCOUNTS: !Ref SpecifyAccountsOrEnterAll
+
   VersionRdsFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Type: AWS::Serverless::Function 
     Properties:
       CodeUri: version_rds/
       Handler: app.lambda_handler
@@ -471,6 +622,19 @@ Resources:
           Variables:
             s3BucketName: !Ref VersionsS3Bucket
         Role: !GetAtt CombineLambdaExecutionRole.Arn
+
+  VersionCombineAcctsFunction:
+      Type: AWS::Serverless::Function
+      Properties:
+        CodeUri: version_combine_acct/
+        Handler: app.lambda_handler
+        Runtime: python3.7
+        MemorySize: 1024
+        Timeout: 300
+        Environment:
+          Variables:
+            s3BucketName: !Ref VersionsS3Bucket
+        Role: !GetAtt CombineAcctLambdaExecutionRole.Arn
 
   TriggerStepFunction:
     Type: Custom::TriggerStepFunction

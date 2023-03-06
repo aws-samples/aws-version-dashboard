@@ -3,8 +3,25 @@
 **Status**: Initial MVP
 The AWS Check Versions Dashboard project contains source code and documentation for backend code and an Amazon Quicksight dashboard to view the deployed versions for Amazon RDS instances, Amazon Managed Streaming for Apache (MSK), Amazon MQ, Amazon Elasticsearch clusters, Amazon EKS clusters, Amazon ElastiCache clusters, and Amazon DocumentDB (DocDB) clusters vs. the latest available versions for each service.   
 
+The AWS Check Version Dashboard provides two templates to launch the required resources.  You can leverage CloudFormation StackSets to launch ```stackset-role-template.yaml``` into your Organizations child accounts that will create the necessary IAM roles Lambda functions will assume for cross-account access.  The solution also includes an AWS SAM (Serverless Application Model) template ```template.yaml``` that will launch all of the necessary resources into an administrator or delegated administrator account.
+
 Example Dashboard using Amazon Quicksight:
 ![Example Dashboard](./docs/images/170.png)
+
+
+**Deployment Instructions** for ```stackset-role-template.yaml```
+
+**Required parameters**:
+
+* **PrimaryAccountId**: The current administrator or delegated administrator account you are launching the StackSet out of.
+
+To deploy this template via CloudFormation StackSets, please refer to the CloudFormation StackSet documentation available at this url: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-getting-started-create.html
+
+To deploy this template to your preferred AWS Organization child account(s) and region(s) via CloudFormation Stack, please refer to the CloudFormation documentation available at this url: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-console-create-stack.html
+
+
+**Deployment Instructions** for ```template.yaml```
+Next, you can follow the instructions below to build and deploy an AWS SAM (Serverless Application Model) template ```template.yaml``` that will launch all of the necessary resources into an administrator or delegated administrator account.
 
 ## Build application
 
@@ -20,13 +37,14 @@ To build and deploy the application: run the following in your shell:
 
 ```bash
 sam build
-sam deploy --guided
+sam deploy --guided --capabilities CAPABILITY_NAMED_IAM
 ```
 
 The first command will build the source of your application. The second command will package and deploy your application to AWS, with a series of prompts:
 
 * **Stack Name**: The name of the stack to deploy to CloudFormation. This should be unique to your account and region, and a good starting point would be check-version-dashboard.
 * **AWS Region**: The AWS region you want to deploy your app to.
+* **SpecifyAccountsOrEnterAll**: Enter an Account ID, a comma delimited list of Account IDs, enter ALL for an entire AWS Organization, or replace the accounts.csv file in the version_acct_list Lambda directory with a list of comma delimited accounts
 * **Confirm changes before deploy**: If set to yes, any change sets will be shown to you before execution for manual review. If set to no, the AWS SAM CLI will automatically deploy application changes.
 * **Allow SAM CLI IAM role creation**: Many AWS SAM templates, including this example, create AWS IAM roles required for the AWS Lambda function(s) included to access AWS services. By default, these are scoped down to minimum required permissions. To deploy an AWS CloudFormation stack which creates or modified IAM roles, the `CAPABILITY_IAM` value for `capabilities` must be provided. If permission isn't provided through this prompt, to deploy this example you must explicitly pass `--capabilities CAPABILITY_IAM` to the `sam deploy` command.
 * **Save arguments to samconfig.toml**: If set to yes, your choices will be saved to a configuration file inside the project, so that in the future you can just re-run `sam deploy` without parameters to deploy changes to your application.
